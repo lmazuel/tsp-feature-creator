@@ -13,6 +13,9 @@ TCGC_REPO = "lmazuel/typespec-azure"
 
 FEATURE_NAME = "Streaming"
 
+PROJECT_NODE_ID = "PVT_kwHOABAGLM4AfkOs" # https://github.com/users/lmazuel/projects/1
+PROJECT_NODE_ID = "PVT_kwDOAGhwUs4Aeqls" # https://github.com/orgs/Azure/projects/636
+
 
 def create_tsp_issue(feature_name):
     return create_issue(TYPESPEC_FEATURE_REPO, f"{feature_name} TSP Author doc")
@@ -27,12 +30,8 @@ def create_codegen_issues(feature_name):
     for repo_name in TYPESPEC_CODEGEN_REPOS:
         repo = get_repo(repo_name)
 
-        user.append(
-            create_issue(repo_name, f"{feature_name} User experience")
-        )
-        impl.append(
-            create_issue(repo_name, f"{feature_name} Implementation")
-        )
+        user.append(create_issue(repo_name, f"{feature_name} User experience"))
+        impl.append(create_issue(repo_name, f"{feature_name} Implementation"))
     return user, impl
 
 
@@ -83,6 +82,6 @@ def create_all_issues(feature_name):
 def do_it():
     create_all_issues(FEATURE_NAME)
 
+
 if __name__ == "__main__":
     do_it()
-    

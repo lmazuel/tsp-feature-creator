@@ -8,13 +8,16 @@ from gh_token import GITHUB_TOKEN
 endpoint_url = "https://api.github.com/graphql"
 
 # Create a transport using the requests library and set the authorization header
-transport = RequestsHTTPTransport(url=endpoint_url, headers={"Authorization": f"Bearer {GITHUB_TOKEN}"})
+transport = RequestsHTTPTransport(
+    url=endpoint_url, headers={"Authorization": f"Bearer {GITHUB_TOKEN}"}
+)
 
 # Create a GraphQL client using the defined transport
 client = Client(transport=transport, fetch_schema_from_transport=True)
 
 # Define a GraphQL query to get repository information
-query = gql("""
+query = gql(
+    """
     query GetRepositories {
         viewer {
             repositories(first: 5) {
@@ -26,7 +29,8 @@ query = gql("""
             }
         }
     }
-""")
+"""
+)
 
 # Execute the query on the transport
 result = client.execute(query)
@@ -40,7 +44,8 @@ for repo in result["viewer"]["repositories"]["nodes"]:
 # Note: Replace the query above with your specific requirements for GitHub data.
 
 # Get the project ID for the TypeSpec project in the Azure organization
-projectQuery = gql("""
+projectQuery = gql(
+    """
 query {
     organization(login: "Azure") {
         projectV2(number: 636) {
@@ -48,12 +53,16 @@ query {
         }
     }
 }
-""")
+"""
+)
 result = client.execute(projectQuery)
-project_node_id = result["organization"]["projectV2"]["id"] # Actually for TypeSpec Framework, it's "PVT_kwDOAGhwUs4Aeqls"
+project_node_id = result["organization"]["projectV2"][
+    "id"
+]  # Actually for TypeSpec Framework, it's "PVT_kwDOAGhwUs4Aeqls"
 
 
-projectQuery = gql("""
+projectQuery = gql(
+    """
 query {
     user(login: "lmazuel") {
         projectV2(number: 1) {
@@ -61,10 +70,12 @@ query {
         }
     }
 }
-""")
-result = client.execute(projectQuery) # PVT_kwHOABAGLM4AfkOs"
+"""
+)
+result = client.execute(projectQuery)  # PVT_kwHOABAGLM4AfkOs"
 
-addToProjectMutation = gql("""
+addToProjectMutation = gql(
+    """
 mutation {
     addProjectV2ItemById(input: {
         projectId: "PVT_kwHOABAGLM4AfkOs"
@@ -74,10 +85,12 @@ mutation {
       }
     }
   }
-""")
+"""
+)
 result = client.execute(addToProjectMutation)
 
-projectQueryDetails = gql("""
+projectQueryDetails = gql(
+    """
 query {
     organization(login: "Azure") {
         projectV2(number: 636) {
@@ -94,10 +107,12 @@ query {
             }
         }
     }
-}""")
+}"""
+)
 result = client.execute(projectQueryDetails)
 
-updateTextFieldMutation = gql("""
+updateTextFieldMutation = gql(
+    """
 mutation {
   updateProjectV2ItemFieldValue(
     input: {
@@ -111,5 +126,6 @@ mutation {
     }
   }
 }
-""")
+"""
+)
 result = client.execute(updateTextFieldMutation)
