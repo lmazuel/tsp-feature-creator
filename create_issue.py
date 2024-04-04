@@ -1,6 +1,6 @@
 from github.Issue import Issue
 
-from tools import create_issue, create_task_list, get_repo
+from tools import create_issue, create_task_list, get_repo, add_to_project
 
 
 TYPESPEC_EPIC_REPO = "lmazuel/typespec-azure"
@@ -11,18 +11,22 @@ TYPESPEC_CODEGEN_REPOS = [
 TYPESPEC_SCENARIO_TEST_REPO = "lmazuel/cadl-ranch"
 TCGC_REPO = "lmazuel/typespec-azure"
 
-FEATURE_NAME = "Streaming"
+FEATURE_NAME = "Visibility"
 
-PROJECT_NODE_ID = "PVT_kwHOABAGLM4AfkOs" # https://github.com/users/lmazuel/projects/1
-PROJECT_NODE_ID = "PVT_kwDOAGhwUs4Aeqls" # https://github.com/orgs/Azure/projects/636
+PROJECT_NODE_ID = "PVT_kwHOABAGLM4AfkOs"  # https://github.com/users/lmazuel/projects/1
+# PROJECT_NODE_ID = "PVT_kwDOAGhwUs4Aeqls" # https://github.com/orgs/Azure/projects/636
 
 
 def create_tsp_issue(feature_name):
-    return create_issue(TYPESPEC_FEATURE_REPO, f"{feature_name} TSP Author doc")
+    return create_issue(
+        TYPESPEC_FEATURE_REPO, f"{feature_name} TSP Author doc", PROJECT_NODE_ID
+    )
 
 
 def create_scenario_test_issue(feature_name):
-    return create_issue(TYPESPEC_SCENARIO_TEST_REPO, f"{feature_name} Scenario tests")
+    return create_issue(
+        TYPESPEC_SCENARIO_TEST_REPO, f"{feature_name} Scenario tests", PROJECT_NODE_ID
+    )
 
 
 def create_codegen_issues(feature_name):
@@ -30,17 +34,23 @@ def create_codegen_issues(feature_name):
     for repo_name in TYPESPEC_CODEGEN_REPOS:
         repo = get_repo(repo_name)
 
-        user.append(create_issue(repo_name, f"{feature_name} User experience"))
-        impl.append(create_issue(repo_name, f"{feature_name} Implementation"))
+        user.append(
+            create_issue(repo_name, f"{feature_name} User experience", PROJECT_NODE_ID)
+        )
+        impl.append(
+            create_issue(repo_name, f"{feature_name} Implementation", PROJECT_NODE_ID)
+        )
     return user, impl
 
 
 def create_tcgc_doc_issue(feature_name):
-    return create_issue(TCGC_REPO, f"{feature_name} TCGC Author doc")
+    return create_issue(TCGC_REPO, f"{feature_name} TCGC Author doc", PROJECT_NODE_ID)
 
 
 def create_tcgc_issue(feature_name):
-    return create_issue(TCGC_REPO, f"{feature_name} TCGC Implementation")
+    return create_issue(
+        TCGC_REPO, f"{feature_name} TCGC Implementation", PROJECT_NODE_ID
+    )
 
 
 def create_epic_issue(
@@ -63,6 +73,7 @@ def create_epic_issue(
     body += create_task_list([tcgc_issue] + implementation_issues, "Implementation")
 
     issue = repo.create_issue(title=f"{feature_name}", body=body)
+    add_to_project(PROJECT_NODE_ID, issue)
     return issue
 
 

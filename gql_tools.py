@@ -22,7 +22,7 @@ class GithubGqlClient:
             dict: The result of the query as a dictionary.
         """
         return self.client.execute(gql(query), variable_values=kwargs)
-    
+
     def add_issue_to_project(self, project_id: int, issue_id: int) -> str:
         """
         Adds an issue to a project.
@@ -46,4 +46,4 @@ class GithubGqlClient:
         }
         """
         result = self.execute(query, **{"projectID": project_id, "issueID": issue_id})
-        return result['addProjectV2ItemById']['item']['id']
+        return result["addProjectV2ItemById"]["item"]["id"]

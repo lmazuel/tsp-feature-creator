@@ -1,5 +1,6 @@
 from github.Issue import Issue
 from gh_token import GITHUB_TOKEN
+from gql_tools import GithubGqlClient
 
 
 from github import Auth, Github
@@ -12,14 +13,47 @@ def get_repo(repo_name):
     return repo
 
 
-def create_issue(repo_name, title):
+_gh_gql_client = None
+
+
+def get_gql_client():
+    global _gh_gql_client
+    if _gh_gql_client is None:
+        _gh_gql_client = GithubGqlClient(GITHUB_TOKEN)
+    return _gh_gql_client
+
+
+def create_issue(repo_name: str, title: str, project_id: str | None = None) -> Issue:
     repo = get_repo(repo_name)
     try:
-        return repo.create_issue(title=title)
+        issue = repo.create_issue(title=title)
+
+        if project_id:
+            add_to_project(project_id, issue)
+        return issue
     except Exception as e:
         print(f"Error creating issue: {e}")
         print(f"Repo: {repo_name}")
         raise
+
+
+def add_to_project(project_id: str, issue: Issue) -> None:
+    node_id = get_node_id(issue)
+    client = get_gql_client()
+    client.add_issue_to_project(project_id, node_id)
+
+
+def get_node_id(issue: Issue) -> str:
+    """
+    Get the node ID of an issue.
+
+    Parameters:
+    issue (object): The issue object.
+
+    Returns:
+    str: The node ID of the issue.
+    """
+    return issue.raw_data["node_id"]
 
 
 def create_task_list(issues: list[Issue], task_type: str) -> str:
