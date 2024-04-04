@@ -77,6 +77,7 @@ def create_all_issues(feature_name):
         feature_name, tsp_spec, tcgc_doc, cadl_ranch, user, impl, tcgc_impl
     )
     print(f"Created issue: {issue.html_url}")
+    print(f"Created issue: {issue.raw_data['node_id']}")
 
 
 def do_it():
