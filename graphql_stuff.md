@@ -1,5 +1,10 @@
 Do your query here: https://docs.github.com/en/graphql/overview/explorer
 
+A few interesting links:
+- https://docs.github.com/en/graphql/reference/objects
+- https://docs.github.com/en/issues/planning-and-tracking-with-projects/automating-your-project/using-the-api-to-manage-projects?tool=cli#updating-projects
+- https://docs.github.com/en/graphql/guides/using-global-node-ids
+
 To get all fields Node ID of project 636 in Azure:
 ```gql
 query {
