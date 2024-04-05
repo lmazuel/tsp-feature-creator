@@ -36,6 +36,20 @@ def create_issue(repo_name: str, title: str, project_id: str | None = None) -> I
         print(f"Repo: {repo_name}")
         raise
 
+def get_issue(repo_name: str, issue_number: int) -> Issue:
+    """
+    Retrieves an issue from a given repository.
+
+    Args:
+        repo_name (str): The name of the repository.
+        issue_number (int): The number of the issue.
+
+    Returns:
+        Issue: The retrieved issue object.
+    """
+    repo = get_repo(repo_name)
+    issue = repo.get_issue(issue_number)
+    return issue
 
 def add_to_project(project_id: str, issue: Issue) -> None:
     node_id = get_node_id(issue)
