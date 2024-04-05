@@ -2,19 +2,34 @@ from github.Issue import Issue
 
 from tools import create_issue, create_task_list, get_repo, add_to_project
 
+PROD_MODE = False
 
-TYPESPEC_EPIC_REPO = "lmazuel/typespec-azure"
-TYPESPEC_FEATURE_REPO = "lmazuel/typespec"
-TYPESPEC_CODEGEN_REPOS = [
-    "lmazuel/autorest.python",
-]
-TYPESPEC_SCENARIO_TEST_REPO = "lmazuel/cadl-ranch"
-TCGC_REPO = "lmazuel/typespec-azure"
+if not PROD_MODE:
+    # Testing
+    TYPESPEC_EPIC_REPO = "lmazuel/typespec-azure"
+    TYPESPEC_FEATURE_REPO = "lmazuel/typespec"
+    TYPESPEC_CODEGEN_REPOS = [
+        "lmazuel/autorest.python",
+    ]
+    TYPESPEC_SCENARIO_TEST_REPO = "lmazuel/cadl-ranch"
+    TCGC_REPO = "lmazuel/typespec-azure"
+    PROJECT_NODE_ID = "PVT_kwHOABAGLM4AfkOs"  # https://github.com/users/lmazuel/projects/1
+else:
+    # Prod
+    TYPESPEC_EPIC_REPO = "Azure/typespec-azure"
+    TYPESPEC_FEATURE_REPO = "Azure/typespec"
+    TYPESPEC_CODEGEN_REPOS = [
+        "Azure/autorest.python",
+        "Azure/autorest.java",
+        "Azure/autorest.typescript",
+        "Azure/autorest.csharp",
+    ]
+    TYPESPEC_SCENARIO_TEST_REPO = "Azure/cadl-ranch"
+    TCGC_REPO = "Azure/typespec-azure"
+    PROJECT_NODE_ID = "PVT_kwDOAGhwUs4Aeqls" # https://github.com/orgs/Azure/projects/636
+
 
 FEATURE_NAME = "Visibility"
-
-PROJECT_NODE_ID = "PVT_kwHOABAGLM4AfkOs"  # https://github.com/users/lmazuel/projects/1
-# PROJECT_NODE_ID = "PVT_kwDOAGhwUs4Aeqls" # https://github.com/orgs/Azure/projects/636
 
 
 def create_tsp_issue(feature_name):
