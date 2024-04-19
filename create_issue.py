@@ -13,7 +13,9 @@ if not PROD_MODE:
     ]
     TYPESPEC_SCENARIO_TEST_REPO = "lmazuel/cadl-ranch"
     TCGC_REPO = "lmazuel/typespec-azure"
-    PROJECT_NODE_ID = "PVT_kwHOABAGLM4AfkOs"  # https://github.com/users/lmazuel/projects/1
+    PROJECT_NODE_ID = (
+        "PVT_kwHOABAGLM4AfkOs"  # https://github.com/users/lmazuel/projects/1
+    )
 else:
     # Prod
     TYPESPEC_EPIC_REPO = "Azure/typespec-azure"
@@ -26,10 +28,12 @@ else:
     ]
     TYPESPEC_SCENARIO_TEST_REPO = "Azure/cadl-ranch"
     TCGC_REPO = "Azure/typespec-azure"
-    PROJECT_NODE_ID = "PVT_kwDOAGhwUs4Aeqls" # https://github.com/orgs/Azure/projects/636
+    PROJECT_NODE_ID = (
+        "PVT_kwDOAGhwUs4Aeqls"  # https://github.com/orgs/Azure/projects/636
+    )
 
 
-FEATURE_NAME = "Visibility"
+FEATURE_NAME = "XML support"
 
 
 def create_tsp_issue(feature_name: str, number: int = None) -> Issue:
@@ -39,13 +43,17 @@ def create_tsp_issue(feature_name: str, number: int = None) -> Issue:
         return issue
     else:
         return create_issue(
-            TYPESPEC_FEATURE_REPO, f"{feature_name} TSP Author doc", project_id=PROJECT_NODE_ID
+            TYPESPEC_FEATURE_REPO,
+            f"{feature_name} TSP Author doc",
+            project_id=PROJECT_NODE_ID,
         )
 
 
 def create_scenario_test_issue(feature_name):
     return create_issue(
-        TYPESPEC_SCENARIO_TEST_REPO, f"{feature_name} Scenario tests", project_id=PROJECT_NODE_ID
+        TYPESPEC_SCENARIO_TEST_REPO,
+        f"{feature_name} Scenario tests",
+        project_id=PROJECT_NODE_ID,
     )
 
 
@@ -55,21 +63,33 @@ def create_codegen_issues(feature_name):
         repo = get_repo(repo_name)
 
         user.append(
-            create_issue(repo_name, f"{feature_name} User experience", project_id=PROJECT_NODE_ID)
+            create_issue(
+                repo_name, f"{feature_name} User experience", project_id=PROJECT_NODE_ID
+            )
         )
         impl.append(
-            create_issue(repo_name, f"{feature_name} Implementation", project_id=PROJECT_NODE_ID)
+            create_issue(
+                repo_name, f"{feature_name} Implementation", project_id=PROJECT_NODE_ID
+            )
         )
     return user, impl
 
 
 def create_tcgc_doc_issue(feature_name):
-    return create_issue(TCGC_REPO, f"{feature_name} TCGC Author doc", project_id=PROJECT_NODE_ID)
+    return create_issue(
+        TCGC_REPO,
+        f"{feature_name} TCGC Author doc",
+        project_id=PROJECT_NODE_ID,
+        labels=["TCGC", "documentation"],
+    )
 
 
 def create_tcgc_issue(feature_name):
     return create_issue(
-        TCGC_REPO, f"{feature_name} TCGC Implementation", project_id=PROJECT_NODE_ID
+        TCGC_REPO,
+        f"{feature_name} TCGC Implementation",
+        project_id=PROJECT_NODE_ID,
+        labels=["TCGC"],
     )
 
 

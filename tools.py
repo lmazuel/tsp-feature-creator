@@ -23,10 +23,18 @@ def get_gql_client():
     return _gh_gql_client
 
 
-def create_issue(repo_name: str, title: str, project_id: str | None = None) -> Issue:
+def create_issue(
+    repo_name: str,
+    title: str,
+    *,
+    project_id: str | None = None,
+    labels: list[str] | None = None,
+) -> Issue:
+    if not labels:
+        labels = []
     repo = get_repo(repo_name)
     try:
-        issue = repo.create_issue(title=title)
+        issue = repo.create_issue(title=title, labels=labels)
 
         if project_id:
             add_to_project(project_id, issue)
@@ -35,6 +43,7 @@ def create_issue(repo_name: str, title: str, project_id: str | None = None) -> I
         print(f"Error creating issue: {e}")
         print(f"Repo: {repo_name}")
         raise
+
 
 def get_issue(repo_name: str, issue_number: int) -> Issue:
     """
@@ -50,6 +59,7 @@ def get_issue(repo_name: str, issue_number: int) -> Issue:
     repo = get_repo(repo_name)
     issue = repo.get_issue(issue_number)
     return issue
+
 
 def add_to_project(project_id: str, issue: Issue) -> None:
     node_id = get_node_id(issue)
