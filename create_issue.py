@@ -25,6 +25,9 @@ else:
         "Azure/autorest.java",
         "Azure/autorest.typescript",
         "Azure/autorest.csharp",
+        "Azure/autorest.go",
+        "Azure/autorest.cpp",
+        "Azure/autorest.rust",
     ]
     TYPESPEC_SCENARIO_TEST_REPO = "Azure/cadl-ranch"
     TCGC_REPO = "Azure/typespec-azure"
@@ -33,7 +36,8 @@ else:
     )
 
 
-FEATURE_NAME = "XML support"
+FEATURE_NAME = "Projected version support"
+NEED_USER_EXPERIENCE_ISSUE = False
 
 
 def create_tsp_issue(feature_name: str, number: int = None) -> Issue:
@@ -62,11 +66,14 @@ def create_codegen_issues(feature_name):
     for repo_name in TYPESPEC_CODEGEN_REPOS:
         repo = get_repo(repo_name)
 
-        user.append(
-            create_issue(
-                repo_name, f"{feature_name} User experience", project_id=PROJECT_NODE_ID
+        if NEED_USER_EXPERIENCE_ISSUE:
+            user.append(
+                create_issue(
+                    repo_name,
+                    f"{feature_name} User experience",
+                    project_id=PROJECT_NODE_ID,
+                )
             )
-        )
         impl.append(
             create_issue(
                 repo_name, f"{feature_name} Implementation", project_id=PROJECT_NODE_ID
@@ -109,10 +116,11 @@ def create_epic_issue(
         body += create_task_list([tsp_issue], "TypeSpec")
         body += "\n\n"
 
-    body += create_task_list(
-        [scenario_test_issue, tsp_doc_issue] + user_experience_codegen_issues, "Spec"
-    )
-    body += "\n\n"
+    spec_list = [scenario_test_issue, tsp_doc_issue] + user_experience_codegen_issues
+    if spec_list:
+        body += create_task_list(spec_list, "Spec")
+        body += "\n\n"
+
     body += create_task_list([tcgc_issue] + implementation_issues, "Implementation")
 
     issue = repo.create_issue(title=f"{feature_name}", body=body, labels=["Epic"])
