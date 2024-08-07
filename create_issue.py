@@ -87,7 +87,7 @@ def create_tcgc_doc_issue(feature_name):
         TCGC_REPO,
         f"{feature_name} TCGC Author doc",
         project_id=PROJECT_NODE_ID,
-        labels=["TCGC", "documentation"],
+        labels=["lib:tcgc", "docs"],
     )
 
 
@@ -96,7 +96,7 @@ def create_tcgc_issue(feature_name):
         TCGC_REPO,
         f"{feature_name} TCGC Implementation",
         project_id=PROJECT_NODE_ID,
-        labels=["TCGC"],
+        labels=["lib:tcgc"],
     )
 
 
