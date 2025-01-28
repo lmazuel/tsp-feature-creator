@@ -20,23 +20,28 @@ else:
     # Prod
     TYPESPEC_EPIC_REPO = "Azure/typespec-azure"
     TYPESPEC_FEATURE_REPO = "Microsoft/typespec"
-    TYPESPEC_CODEGEN_REPOS = [
-        "Azure/autorest.python",
-        "Azure/autorest.java",
-        "Azure/autorest.typescript",
-        "Azure/autorest.csharp",
-        "Azure/autorest.go",
-        "Azure/autorest.cpp",
-        "Azure/autorest.rust",
-    ]
-    TYPESPEC_SCENARIO_TEST_REPO = "Azure/cadl-ranch"
+    # Nice name: [prefix, repo, [labels]]
+    TYPESPEC_CODEGEN_REPOS = {
+        "Python": [
+            "http-client-python",
+            "Microsoft/typespec",
+            ["emitter:client:python"],
+        ],
+        "Java": ["[http-client-java]", "Microsoft/typespec", ["emitter:client:java"]],
+        "JS": ["[http-client-ts]", "Azure/autorest.typescript", ["CodeGen"]],
+        "C#": ["[http-client-csharp]", "Microsoft/typespec", ["emitter:client:csharp"]],
+        "Go": ["[http-client-go]", "Azure/autorest.go", ["TypeSpec", "CodeGen"]],
+        "C++": ["[http-client-cpp]", "Azure/autorest.cpp", ["TypeSpec", "CodeGen"]],
+        "Rust": ["[http-client-rust]", "Azure/typespec-rust", ["CodeGen"]],
+    }
+    TYPESPEC_SCENARIO_TEST_REPO = "Azure/typespec-azure"
     TCGC_REPO = "Azure/typespec-azure"
     PROJECT_NODE_ID = (
         "PVT_kwDOAGhwUs4Aeqls"  # https://github.com/orgs/Azure/projects/636
     )
 
 
-FEATURE_NAME = "Projected version support"
+FEATURE_NAME = "Paging ContinuationToken"
 NEED_USER_EXPERIENCE_ISSUE = False
 
 
@@ -63,20 +68,25 @@ def create_scenario_test_issue(feature_name):
 
 def create_codegen_issues(feature_name):
     user, impl = [], []
-    for repo_name in TYPESPEC_CODEGEN_REPOS:
+    for lang, metadata in TYPESPEC_CODEGEN_REPOS.items():
+        prefix, repo_name, labels = metadata
         repo = get_repo(repo_name)
 
         if NEED_USER_EXPERIENCE_ISSUE:
             user.append(
                 create_issue(
                     repo_name,
-                    f"{feature_name} User experience",
+                    f"{prefix} {feature_name} User experience",
                     project_id=PROJECT_NODE_ID,
+                    labels=labels,
                 )
             )
         impl.append(
             create_issue(
-                repo_name, f"{feature_name} Implementation", project_id=PROJECT_NODE_ID
+                repo_name,
+                f"{prefix} {feature_name} Implementation",
+                project_id=PROJECT_NODE_ID,
+                labels=labels,
             )
         )
     return user, impl
@@ -129,7 +139,7 @@ def create_epic_issue(
 
 
 def create_all_issues(feature_name):
-    tsp_spec = create_tsp_issue(feature_name)
+    tsp_spec = None  # create_tsp_issue(feature_name, 3736)
     user, impl = create_codegen_issues(feature_name)
     tcgc_doc = create_tcgc_doc_issue(feature_name)
     tcgc_impl = create_tcgc_issue(feature_name)
