@@ -3,6 +3,7 @@ from github.Issue import Issue
 from tools import create_issue, create_task_list, get_repo, add_to_project, get_issue
 
 PROD_MODE = True
+AZURE_ONLY = False
 
 if not PROD_MODE:
     # Testing
@@ -11,7 +12,7 @@ if not PROD_MODE:
     TYPESPEC_CODEGEN_REPOS = [
         "lmazuel/autorest.python",
     ]
-    TYPESPEC_SCENARIO_TEST_REPO = "lmazuel/cadl-ranch"
+    TYPESPEC_SCENARIO_TEST_REPO = ("lmazuel/cadl-ranch", "lib:cadl-ranch")
     TCGC_REPO = "lmazuel/typespec-azure"
     PROJECT_NODE_ID = (
         "PVT_kwHOABAGLM4AfkOs"  # https://github.com/users/lmazuel/projects/1
@@ -34,7 +35,7 @@ else:
         "C++": ["[http-client-cpp]", "Azure/autorest.cpp", ["TypeSpec", "CodeGen"]],
         "Rust": ["[http-client-rust]", "Azure/typespec-rust", ["CodeGen"]],
     }
-    TYPESPEC_SCENARIO_TEST_REPO = "Azure/typespec-azure"
+    TYPESPEC_SCENARIO_TEST_REPO = ("Azure/typespec-azure", "lib:azure-http-specs") if AZURE_ONLY else ("Microsoft/typespec", "lib:http-specs")
     TCGC_REPO = "Azure/typespec-azure"
     PROJECT_NODE_ID = (
         "PVT_kwDOAGhwUs4Aeqls"  # https://github.com/orgs/Azure/projects/636
@@ -59,10 +60,12 @@ def create_tsp_issue(feature_name: str, number: int = None) -> Issue:
 
 
 def create_scenario_test_issue(feature_name):
+    repo_name, label = TYPESPEC_SCENARIO_TEST_REPO
     return create_issue(
-        TYPESPEC_SCENARIO_TEST_REPO,
+        repo_name,
         f"{feature_name} Scenario tests",
         project_id=PROJECT_NODE_ID,
+        labels=[label],
     )
 
 
