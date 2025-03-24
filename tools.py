@@ -1,3 +1,4 @@
+from typing import Optional
 from github.Issue import Issue
 from gh_token import GITHUB_TOKEN
 from gql_tools import GithubGqlClient
@@ -80,19 +81,20 @@ def get_node_id(issue: Issue) -> str:
     return issue.raw_data["node_id"]
 
 
-def create_task_list(issues: list[Issue], task_type: str) -> str:
+def create_task_list(issues: list[Optional[Issue]], task_type: str) -> str:
     """
     Creates a task list with the given issues and task type.
 
     Args:
-        issues (list[Issue]): A list of issues.
+        issues (list[Issue]): A list of issues. Can be None.
         task_type (str): The type of task.
 
     Returns:
         str: The task list as a string.
     """
-    buffer = f"```[tasklist]\n### {task_type}\n"
+    buffer = f"### {task_type}\n"
     for issue in issues:
+        if not issue:
+            continue
         buffer += f"- [ ] {issue.html_url}\n"
-    buffer += "```"
     return buffer
