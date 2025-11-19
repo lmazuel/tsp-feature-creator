@@ -3,7 +3,7 @@ from github.Issue import Issue
 from tools import create_issue, create_task_list, get_repo, add_to_project, get_issue
 
 PROD_MODE = True
-AZURE_ONLY = False
+AZURE_ONLY = True
 
 if not PROD_MODE:
     # Testing
@@ -42,7 +42,7 @@ else:
     )
 
 
-FEATURE_NAME = "Paging ContinuationToken"
+FEATURE_NAME = "Reference external types"
 NEED_USER_EXPERIENCE_ISSUE = False
 
 
@@ -104,13 +104,18 @@ def create_tcgc_doc_issue(feature_name):
     )
 
 
-def create_tcgc_issue(feature_name):
-    return create_issue(
-        TCGC_REPO,
-        f"{feature_name} TCGC Implementation",
-        project_id=PROJECT_NODE_ID,
-        labels=["lib:tcgc"],
-    )
+def create_tcgc_issue(feature_name: str, number: int = None) -> Issue:
+    if number:
+        issue = get_issue(TCGC_REPO, number)
+        add_to_project(PROJECT_NODE_ID, issue)
+        return issue
+    else:
+        return create_issue(
+            TCGC_REPO,
+            f"{feature_name} TCGC Implementation",
+            project_id=PROJECT_NODE_ID,
+            labels=["lib:tcgc"],
+        )
 
 
 def create_epic_issue(
