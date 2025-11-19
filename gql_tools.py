@@ -23,13 +23,13 @@ class GithubGqlClient:
         """
         return self.client.execute(gql(query), variable_values=kwargs)
 
-    def add_issue_to_project(self, project_id: int, issue_id: int) -> str:
+    def add_issue_to_project(self, project_id: str, issue_id: str) -> str:
         """
         Adds an issue to a project.
 
         Args:
-            project_id (int): The ID of the project.
-            issue_id (int): The ID of the issue.
+            project_id (str): The ID of the project.
+            issue_id (str): The ID of the issue.
 
         Returns:
             str: The ID of the item connecting issue and project
