@@ -1,17 +1,22 @@
+from typing import cast
 from github.Issue import Issue
 
 from tools import create_issue, create_task_list, get_repo, add_to_project, get_issue
 
 PROD_MODE = True
-AZURE_ONLY = True
+AZURE_ONLY = False
 
 if not PROD_MODE:
     # Testing
     TYPESPEC_EPIC_REPO = "lmazuel/typespec-azure"
     TYPESPEC_FEATURE_REPO = "lmazuel/typespec"
-    TYPESPEC_CODEGEN_REPOS = [
-        "lmazuel/autorest.python",
-    ]
+    TYPESPEC_CODEGEN_REPOS = {
+        "Python": [
+            "http-client-python",
+            "lmazuel/autorest.python",
+            ["test-label"],
+        ],
+    }
     TYPESPEC_SCENARIO_TEST_REPO = ("lmazuel/cadl-ranch", "lib:cadl-ranch")
     TCGC_REPO = "lmazuel/typespec-azure"
     PROJECT_NODE_ID = (
@@ -42,11 +47,11 @@ else:
     )
 
 
-FEATURE_NAME = "Reference external types"
+FEATURE_NAME = "CSV encoding for model properties"
 NEED_USER_EXPERIENCE_ISSUE = False
 
 
-def create_tsp_issue(feature_name: str, number: int = None) -> Issue:
+def create_tsp_issue(feature_name: str, number: int | None = None) -> Issue:
     if number:
         issue = get_issue(TYPESPEC_FEATURE_REPO, number)
         add_to_project(PROJECT_NODE_ID, issue)
@@ -104,7 +109,7 @@ def create_tcgc_doc_issue(feature_name):
     )
 
 
-def create_tcgc_issue(feature_name: str, number: int = None) -> Issue:
+def create_tcgc_issue(feature_name: str, number: int | None = None) -> Issue:
     if number:
         issue = get_issue(TCGC_REPO, number)
         add_to_project(PROJECT_NODE_ID, issue)
@@ -136,10 +141,11 @@ def create_epic_issue(
 
     spec_list = [scenario_test_issue, tsp_doc_issue] + user_experience_codegen_issues
     if spec_list:
-        body += create_task_list(spec_list, "Spec")
+        body += create_task_list(cast(list[Issue | None], spec_list), "Spec")
         body += "\n\n"
 
-    body += create_task_list([tcgc_issue] + implementation_issues, "Implementation")
+    impl_list = [tcgc_issue] + implementation_issues
+    body += create_task_list(cast(list[Issue | None], impl_list), "Implementation")
 
     issue = repo.create_issue(title=f"{feature_name}", body=body, labels=["Epic"])
     add_to_project(PROJECT_NODE_ID, issue)
@@ -147,7 +153,7 @@ def create_epic_issue(
 
 
 def create_all_issues(feature_name):
-    tsp_spec = None  # create_tsp_issue(feature_name, 3736)
+    tsp_spec = create_tsp_issue(feature_name, 8874)
     user, impl = create_codegen_issues(feature_name)
     tcgc_doc = create_tcgc_doc_issue(feature_name)
     tcgc_impl = create_tcgc_issue(feature_name)
