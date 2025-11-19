@@ -4,7 +4,7 @@ from github.Issue import Issue
 from tools import create_issue, create_task_list, get_repo, add_to_project, get_issue
 
 PROD_MODE = True
-AZURE_ONLY = False
+SCENARIO_TYPES = ("Generic", "Azure")  # Can be "Generic", "Azure", or both
 
 if not PROD_MODE:
     # Testing
@@ -17,7 +17,7 @@ if not PROD_MODE:
             ["test-label"],
         ],
     }
-    TYPESPEC_SCENARIO_TEST_REPO = ("lmazuel/cadl-ranch", "lib:cadl-ranch")
+    TYPESPEC_SCENARIO_TEST_REPO = [("lmazuel/cadl-ranch", "lib:cadl-ranch")]
     TCGC_REPO = "lmazuel/typespec-azure"
     PROJECT_NODE_ID = (
         "PVT_kwHOABAGLM4AfkOs"  # https://github.com/users/lmazuel/projects/1
@@ -40,7 +40,14 @@ else:
         "C++": ["[http-client-cpp]", "Azure/autorest.cpp", ["TypeSpec", "CodeGen"]],
         "Rust": ["[http-client-rust]", "Azure/typespec-rust", ["CodeGen"]],
     }
-    TYPESPEC_SCENARIO_TEST_REPO = ("Azure/typespec-azure", "lib:azure-http-specs") if AZURE_ONLY else ("Microsoft/typespec", "lib:http-specs")
+    # Determine scenario test repo based on SCENARIO_TYPES - always return a list
+    TYPESPEC_SCENARIO_TEST_REPO = []
+    if "Azure" in SCENARIO_TYPES:
+        TYPESPEC_SCENARIO_TEST_REPO.append(("Azure/typespec-azure", "lib:azure-http-specs"))
+    if "Generic" in SCENARIO_TYPES:
+        TYPESPEC_SCENARIO_TEST_REPO.append(("Microsoft/typespec", "lib:http-specs"))
+    if not TYPESPEC_SCENARIO_TEST_REPO:
+        raise ValueError("SCENARIO_TYPES must contain at least 'Azure' or 'Generic'")
     TCGC_REPO = "Azure/typespec-azure"
     PROJECT_NODE_ID = (
         "PVT_kwDOAGhwUs4Aeqls"  # https://github.com/orgs/Azure/projects/636
@@ -65,13 +72,16 @@ def create_tsp_issue(feature_name: str, number: int | None = None) -> Issue:
 
 
 def create_scenario_test_issue(feature_name):
-    repo_name, label = TYPESPEC_SCENARIO_TEST_REPO
-    return create_issue(
-        repo_name,
-        f"{feature_name} Scenario tests",
-        project_id=PROJECT_NODE_ID,
-        labels=[label],
-    )
+    # TYPESPEC_SCENARIO_TEST_REPO is always a list now
+    issues = []
+    for repo_name, label in TYPESPEC_SCENARIO_TEST_REPO:
+        issues.append(create_issue(
+            repo_name,
+            f"{feature_name} Scenario tests",
+            project_id=PROJECT_NODE_ID,
+            labels=[label],
+        ))
+    return issues
 
 
 def create_codegen_issues(feature_name):
@@ -127,7 +137,7 @@ def create_epic_issue(
     feature_name,
     tsp_issue: Issue | None,
     tsp_doc_issue: Issue,
-    scenario_test_issue: Issue,
+    scenario_test_issues: list[Issue],
     user_experience_codegen_issues: list[Issue],
     implementation_issues: list[Issue],
     tcgc_issue: Issue,
@@ -139,7 +149,8 @@ def create_epic_issue(
         body += create_task_list([tsp_issue], "TypeSpec")
         body += "\n\n"
 
-    spec_list = [scenario_test_issue, tsp_doc_issue] + user_experience_codegen_issues
+    # scenario_test_issues is always a list now
+    spec_list = scenario_test_issues + [tsp_doc_issue] + user_experience_codegen_issues
     if spec_list:
         body += create_task_list(cast(list[Issue | None], spec_list), "Spec")
         body += "\n\n"
@@ -153,7 +164,7 @@ def create_epic_issue(
 
 
 def create_all_issues(feature_name):
-    tsp_spec = create_tsp_issue(feature_name, 8874)
+    tsp_spec = None # create_tsp_issue(feature_name, 8874)
     user, impl = create_codegen_issues(feature_name)
     tcgc_doc = create_tcgc_doc_issue(feature_name)
     tcgc_impl = create_tcgc_issue(feature_name)
