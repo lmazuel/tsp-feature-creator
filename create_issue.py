@@ -55,6 +55,7 @@ else:
 
 
 FEATURE_NAME = "CSV encoding for model properties"
+FEATURE_TEXT = None  # Optional text for the Epic issue body
 NEED_USER_EXPERIENCE_ISSUE = False
 
 
@@ -141,9 +142,15 @@ def create_epic_issue(
     user_experience_codegen_issues: list[Issue],
     implementation_issues: list[Issue],
     tcgc_issue: Issue,
+    feature_text: str | None = None,
 ) -> Issue:
     repo = get_repo(TYPESPEC_EPIC_REPO)
     body = ""
+    
+    # Add feature text if provided
+    if feature_text:
+        body += feature_text
+        body += "\n\n"
 
     if tsp_issue:
         body += create_task_list([tsp_issue], "TypeSpec")
@@ -170,7 +177,7 @@ def create_all_issues(feature_name):
     tcgc_impl = create_tcgc_issue(feature_name)
     cadl_ranch = create_scenario_test_issue(feature_name)
     issue = create_epic_issue(
-        feature_name, tsp_spec, tcgc_doc, cadl_ranch, user, impl, tcgc_impl
+        feature_name, tsp_spec, tcgc_doc, cadl_ranch, user, impl, tcgc_impl, FEATURE_TEXT
     )
     print(f"Created issue: {issue.html_url}")
     print(f"Created issue: {issue.raw_data['node_id']}")
