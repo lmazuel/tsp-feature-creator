@@ -1,7 +1,7 @@
 from typing import cast
 from github.Issue import Issue
 
-from tools import create_issue, create_task_list, get_repo, add_to_project, get_issue
+from tools import create_issue, create_task_list, get_repo, add_to_project, get_issue, add_sub_issue
 
 PROD_MODE = True
 SCENARIO_TYPES = ("Generic", "Azure")  # Can be "Generic", "Azure", or both
@@ -54,8 +54,10 @@ else:
     )
 
 
-FEATURE_NAME = "CSV encoding for model properties"
-FEATURE_TEXT = None  # Optional text for the Epic issue body
+FEATURE_NAME = "Multiples services for one client"
+FEATURE_TEXT = """Ability for emitters to generate one client from multiple services defined in TypeSpec.
+Useful for ARM services like Compute where multiple services (VMs, Disks, Networks, etc.) are defined but a single client is expected.
+"""
 NEED_USER_EXPERIENCE_ISSUE = False
 
 
@@ -167,6 +169,23 @@ def create_epic_issue(
 
     issue = repo.create_issue(title=f"{feature_name}", body=body, labels=["Epic"])
     add_to_project(PROJECT_NODE_ID, issue)
+    
+    # Add all issues as sub-issues of the epic
+    all_issues = []
+    if tsp_issue:
+        all_issues.append(tsp_issue)
+    all_issues.extend(scenario_test_issues)
+    all_issues.append(tsp_doc_issue)
+    all_issues.extend(user_experience_codegen_issues)
+    all_issues.append(tcgc_issue)
+    all_issues.extend(implementation_issues)
+    
+    for sub_issue in all_issues:
+        try:
+            add_sub_issue(issue, sub_issue)
+        except Exception as e:
+            print(f"Warning: Could not add sub-issue {sub_issue.html_url}: {e}")
+    
     return issue
 
 

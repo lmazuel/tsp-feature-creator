@@ -47,3 +47,25 @@ class GithubGqlClient:
         """
         result = self.execute(query, **{"projectID": project_id, "issueID": issue_id})
         return result["addProjectV2ItemById"]["item"]["id"]
+
+    def add_sub_issue(self, parent_issue_id: str, sub_issue_id: str) -> None:
+        """
+        Adds a sub-issue relationship between two issues.
+
+        Args:
+            parent_issue_id (str): The node ID of the parent issue.
+            sub_issue_id (str): The node ID of the sub-issue.
+        """
+        query = """
+            mutation AddSubIssue($issueId: ID!, $subIssueId: ID!) {
+                addSubIssue(input: {
+                    issueId: $issueId,
+                    subIssueId: $subIssueId
+                }) {
+                    subIssue {
+                        id
+                    }
+                }
+            }
+        """
+        self.execute(query, **{"issueId": parent_issue_id, "subIssueId": sub_issue_id})

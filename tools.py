@@ -98,3 +98,22 @@ def create_task_list(issues: list[Optional[Issue]], task_type: str) -> str:
             continue
         buffer += f"- [ ] {issue.html_url}\n"
     return buffer
+
+
+def add_sub_issue(parent_issue: Issue, sub_issue: Issue) -> None:
+    """
+    Adds a sub-issue relationship between two issues.
+
+    Args:
+        parent_issue (Issue): The parent issue.
+        sub_issue (Issue): The sub-issue to be added as a child.
+    """
+    parent_node_id = get_node_id(parent_issue)
+    sub_issue_node_id = get_node_id(sub_issue)
+    client = get_gql_client()
+    try:
+        client.add_sub_issue(parent_node_id, sub_issue_node_id)
+        print(f"Successfully added sub-issue relationship: {sub_issue.html_url} -> {parent_issue.html_url}")
+    except Exception as e:
+        print(f"Error adding sub-issue relationship: {e}")
+        raise
